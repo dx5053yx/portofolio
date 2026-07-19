@@ -1,0 +1,12 @@
+name: Keep Supabase Alive
+on:
+  schedule:
+    - cron: '0 0 * * *' # tiap hari jam 00:00 UTC
+  workflow_dispatch: # manual trigger juga bisa
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: curl -sf ${{ secrets.SITE_URL }}/api/health || echo "Ping failed"
