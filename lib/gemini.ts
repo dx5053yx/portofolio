@@ -35,8 +35,10 @@ export async function analyzeCertificate(
 
   const ai = new GoogleGenAI({ apiKey });
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash',
+  let response;
+  try {
+    response = await ai.models.generateContent({
+      model: 'gemini-3.0-flash',
     contents: [
       {
         role: 'user',
@@ -52,6 +54,14 @@ export async function analyzeCertificate(
       },
     ],
   });
+
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    if (errorMessage.includes('429') || errorMessage.includes('RESOURCE_EXHAUSTED') || errorMessage.includes('quota')) {
+      throw new Error('Kuota Gemini API habis. Coba lagi dalam beberapa menit, atau isi form manual.');
+    }
+    throw new Error('Gagal menghubungi Gemini API. Coba lagi atau isi manual.');
+  }
 
   const text = response.text;
   if (!text) {

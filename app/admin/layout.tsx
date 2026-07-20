@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import styles from './admin.module.css';
 
@@ -8,11 +7,18 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  // Auth is enforced by proxy.ts (layer 1) and RLS (layer 2).
+  // This layout just provides the nav chrome.
+  // The login page renders under this layout too, so we don't redirect here
+  // to avoid an infinite loop — proxy.ts already handles that.
 
-  if (!session) {
-    redirect('/admin/login');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // If not authenticated, render children without the admin nav
+  // (this case only happens for /admin/login since proxy.ts blocks others)
+  if (!user) {
+    return <>{children}</>;
   }
 
   return (

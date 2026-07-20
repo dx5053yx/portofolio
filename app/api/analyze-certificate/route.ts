@@ -24,8 +24,13 @@ export async function POST(req: NextRequest) {
     const result = await analyzeCertificate(base64, file.type);
     
     return NextResponse.json(result);
-  } catch (error: any) {
-    console.error('Error analyzing certificate:', error);
-    return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Terjadi kesalahan server.';
+    console.error('Error analyzing certificate:', message);
+    // Only return the clean error message, not the full stack/raw API error
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
   }
 }

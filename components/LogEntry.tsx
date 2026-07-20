@@ -10,6 +10,7 @@ interface LogEntryProps {
   tags?: string[];
   category?: string;
   verifyUrl?: string;
+  imageUrl?: string;
 }
 
 export function LogEntry({
@@ -21,6 +22,7 @@ export function LogEntry({
   tags,
   category,
   verifyUrl,
+  imageUrl,
 }: LogEntryProps) {
   // Determine status dot modifier class based on globals.css
   const statusClass = `status-dot--${status}`;
@@ -53,6 +55,12 @@ export function LogEntry({
           </h3>
         </div>
         
+        {imageUrl && (
+          <a href={imageUrl} target="_blank" rel="noopener noreferrer" className={styles.imageLink}>
+            <img src={imageUrl} alt={title} className={styles.thumbnail} />
+          </a>
+        )}
+
         {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
         {description && <p className={styles.description}>{description}</p>}
         

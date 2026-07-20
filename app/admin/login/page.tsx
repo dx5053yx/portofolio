@@ -24,11 +24,11 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setError('Email atau password salah.');
+      console.error('Login error:', error.message);
+      setError(`Login gagal: ${error.message}`);
       setLoading(false);
     } else {
-      router.push('/admin');
-      router.refresh();
+      window.location.href = '/admin';
     }
   };
 

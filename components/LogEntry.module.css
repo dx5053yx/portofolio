@@ -99,3 +99,26 @@
   gap: var(--space-xs);
   margin-top: var(--space-sm);
 }
+
+.imageLink {
+  display: block;
+  margin: var(--space-sm) 0;
+  width: fit-content;
+}
+
+.thumbnail {
+  display: block;
+  max-width: 240px;
+  max-height: 160px;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 143, 163, 0.15);
+  object-fit: cover;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.thumbnail:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+}

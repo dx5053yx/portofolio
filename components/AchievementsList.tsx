@@ -72,6 +72,7 @@ export function AchievementsList({ achievements }: AchievementsListProps) {
                 tags={achievement.tags}
                 category={achievement.category}
                 verifyUrl={achievement.verify_url || undefined}
+                imageUrl={achievement.file_url || undefined}
               />
             </ScrollAnimator>
           ))
