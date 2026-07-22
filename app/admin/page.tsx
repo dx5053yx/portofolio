@@ -7,7 +7,7 @@ import type { Achievement } from '@/lib/types';
 export default async function AdminDashboard() {
   const supabase = await createClient();
   
-  const { data: achievements, error } = await supabase
+  const { data: achievements } = await supabase
     .from('achievements')
     .select('*')
     .order('sort_order', { ascending: true })

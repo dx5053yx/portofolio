@@ -35,28 +35,37 @@ export async function analyzeCertificate(
 
   const ai = new GoogleGenAI({ apiKey });
 
+  const TIMEOUT_MS = 25000;
   let response;
   try {
-    response = await ai.models.generateContent({
-      model: 'gemini-3.0-flash',
-    contents: [
-      {
-        role: 'user',
-        parts: [
-          { text: PROMPT },
-          {
-            inlineData: {
-              mimeType,
-              data: imageBase64,
+    const apiCall = ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: PROMPT },
+            {
+              inlineData: {
+                mimeType,
+                data: imageBase64,
+              },
             },
-          },
-        ],
-      },
-    ],
-  });
+          ],
+        },
+      ],
+    });
 
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('TIMEOUT')), TIMEOUT_MS)
+    );
+
+    response = await Promise.race([apiCall, timeoutPromise]);
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : String(err);
+    if (errorMessage === 'TIMEOUT') {
+      throw new Error('Proses AI membutuhkan waktu terlalu lama (timeout 25 detik). Silakan isi manual.');
+    }
     if (errorMessage.includes('429') || errorMessage.includes('RESOURCE_EXHAUSTED') || errorMessage.includes('quota')) {
       throw new Error('Kuota Gemini API habis. Coba lagi dalam beberapa menit, atau isi form manual.');
     }

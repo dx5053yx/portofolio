@@ -8,7 +8,7 @@ export async function GET() {
     await supabase.from('achievements').select('id', { count: 'exact', head: true });
     
     return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Database connection failed' }, { status: 500 });
   }
 }

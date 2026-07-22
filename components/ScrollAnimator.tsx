@@ -9,15 +9,15 @@ interface ScrollAnimatorProps {
 
 export function ScrollAnimator({ children, delay = 0 }: ScrollAnimatorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
-    // Respect prefers-reduced-motion
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) {
-      setIsVisible(true);
-      return;
-    }
+    if (isVisible) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -37,7 +37,7 @@ export function ScrollAnimator({ children, delay = 0 }: ScrollAnimatorProps) {
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [isVisible]);
 
   return (
     <div

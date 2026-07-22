@@ -14,7 +14,7 @@ export default function AdminTableClient({ achievements }: { achievements: Achie
       try {
         await deleteAchievement(id);
         router.refresh();
-      } catch (err) {
+      } catch {
         alert('Gagal menghapus');
       }
     }
@@ -24,7 +24,7 @@ export default function AdminTableClient({ achievements }: { achievements: Achie
     try {
       await toggleFeatured(id, !currentFeatured);
       router.refresh();
-    } catch (err) {
+    } catch {
       alert('Gagal mengupdate featured status');
     }
   };

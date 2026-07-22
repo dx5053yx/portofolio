@@ -20,7 +20,7 @@ export default function NewAchievementPage() {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `certificates/${fileName}`;
       
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('certificates')
         .upload(filePath, file);
 

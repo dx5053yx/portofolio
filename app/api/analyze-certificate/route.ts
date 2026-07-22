@@ -5,9 +5,9 @@ import { analyzeCertificate } from '@/lib/gemini';
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
     
-    if (!session) {
+    if (!user || user.id !== process.env.ADMIN_USER_ID) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -76,8 +76,9 @@ export default function AchievementForm({ initialData, onSubmit }: AchievementFo
         tags: result.suggested_tags || prev.tags,
       }));
       setIsAiFilled(true);
-    } catch (err: any) {
-      setAiError(err.message || 'Gagal baca sertifikat. Coba upload ulang atau isi manual.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal baca sertifikat. Coba upload ulang atau isi manual.';
+      setAiError(msg);
     } finally {
       setIsAiLoading(false);
     }
@@ -90,8 +91,9 @@ export default function AchievementForm({ initialData, onSubmit }: AchievementFo
     
     try {
       await onSubmit(formData, file);
-    } catch (err: any) {
-      setSubmitError(err.message || 'Gagal menyimpan data.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menyimpan data.';
+      setSubmitError(msg);
       setIsSubmitting(false);
     }
   };
@@ -115,6 +117,7 @@ export default function AchievementForm({ initialData, onSubmit }: AchievementFo
                 {preview.endsWith('.pdf') || (file && file.type === 'application/pdf') ? (
                   <div className={styles.pdfPreview}>PDF Document</div>
                 ) : (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={preview} alt="Preview" className={styles.previewImage} />
                 )}
               </div>

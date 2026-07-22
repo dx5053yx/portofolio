@@ -57,6 +57,7 @@ export function LogEntry({
         
         {imageUrl && (
           <a href={imageUrl} target="_blank" rel="noopener noreferrer" className={styles.imageLink}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={imageUrl} alt={title} className={styles.thumbnail} />
           </a>
         )}
