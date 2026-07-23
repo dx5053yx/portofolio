@@ -6,10 +6,13 @@ export type Status = 'draft' | 'published';
 export interface Achievement {
   id: string;
   title: string;
+  title_en?: string;
   category: Category;
   issuer: string | null;
+  issuer_en?: string | null;
   date_achieved: string | null; // ISO date string (YYYY-MM-DD)
   description: string | null;
+  description_en?: string | null;
   file_url: string | null;
   verify_url: string | null;
   featured: boolean;
@@ -22,26 +25,18 @@ export interface Achievement {
 
 // === Form types ===
 
-export interface AchievementFormData {
-  title: string;
-  category: Category;
-  issuer: string;
-  date_achieved: string;
-  description: string;
-  file_url: string;
-  verify_url: string;
-  tags: string[];
-  featured: boolean;
-  status: Status;
-}
+export type AchievementFormData = Omit<Achievement, 'id' | 'created_at' | 'updated_at'>;
 
 // === AI types ===
 
 export interface AiAnalysisResult {
   title: string;
+  title_en?: string;
   issuer: string | null;
+  issuer_en?: string | null;
   date: string | null;
   description: string | null;
+  description_en?: string | null;
   suggested_category: Category;
   suggested_tags: string[];
 }
@@ -56,6 +51,7 @@ export interface Project {
   title: string;
   stack: string[];
   description: string;
+  description_en?: string;
   url?: string;
 }
 

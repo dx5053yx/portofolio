@@ -180,3 +180,52 @@
   text-align: center;
   color: var(--text-muted);
 }
+
+.filterBar {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--panel);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.filterInput, .filterSelect {
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.filterInput:focus, .filterSelect:focus {
+  border-color: var(--accent-teal);
+}
+
+.filterSelect option {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.filterInput {
+  flex: 1;
+}
+
+.sortInput {
+  width: 60px;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.sortInput:focus {
+  border-color: var(--accent-teal);
+  outline: none;
+}

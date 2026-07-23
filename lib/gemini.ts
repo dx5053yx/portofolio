@@ -9,9 +9,12 @@ Dari gambar yang diberikan, hasilkan HANYA JSON dengan format ini (tanpa markdow
 
 {
   "title": string,
+  "title_en": string (terjemahan bahasa Inggris dari title),
   "issuer": string atau null,
+  "issuer_en": string atau null (terjemahan bahasa Inggris dari issuer),
   "date": string (format YYYY-MM-DD) atau null,
   "description": string (2-3 kalimat, Bahasa Indonesia, nada profesional, cocok buat ditampilkan di portfolio),
+  "description_en": string (terjemahan bahasa Inggris dari description, dengan nada profesional),
   "suggested_category": salah satu dari "sertifikat" | "kompetisi" | "organisasi" | "proyek",
   "suggested_tags": array of string (maksimal 5, lowercase, tanpa spasi berlebih)
 }
@@ -113,9 +116,12 @@ export async function analyzeCertificate(
 
   return {
     title: parsed.title as string,
+    title_en: (parsed.title_en as string) || undefined,
     issuer: (parsed.issuer as string) || null,
+    issuer_en: (parsed.issuer_en as string) || null,
     date: (parsed.date as string) || null,
     description: (parsed.description as string) || null,
+    description_en: (parsed.description_en as string) || null,
     suggested_category: parsed.suggested_category as Category,
     suggested_tags: parsed.suggested_tags as string[],
   };

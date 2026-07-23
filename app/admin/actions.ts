@@ -33,6 +33,13 @@ export async function toggleFeatured(id: string, featured: boolean) {
   revalidatePath('/');
 }
 
+export async function updateSortOrder(id: string, sort_order: number) {
+  const supabase = await getAdminClient();
+  const { error } = await supabase.from('achievements').update({ sort_order }).eq('id', id);
+  if (error) throw new Error(error.message);
+  revalidatePath('/');
+}
+
 export async function revalidateHome() {
   revalidatePath('/');
 }

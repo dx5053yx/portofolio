@@ -4,7 +4,16 @@ import { updateSession } from '@/lib/supabase/middleware';
 export async function proxy(request: NextRequest) {
   const { user, supabaseResponse } = await updateSession(request);
 
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+  
+  // Tangkap query param ?lang=en atau ?lang=id
+  const lang = searchParams.get('lang');
+  if (lang && (lang === 'en' || lang === 'id')) {
+    supabaseResponse.cookies.set('NEXT_LOCALE', lang, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+    });
+  }
 
   // Admin routes (except /admin/login) require authenticated admin user
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {

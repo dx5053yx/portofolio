@@ -15,7 +15,7 @@ export function PdfThumbnail({ url, className }: PdfThumbnailProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    let renderTask: any;
+    let renderTask: ReturnType<pdfjsLib.PDFPageProxy['render']> | undefined;
 
     const renderPdf = async () => {
       try {

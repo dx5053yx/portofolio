@@ -2,34 +2,50 @@
 
 Temuan dari review `github.com/dx5053yx/portofolio`. Dikelompokkan per prioritas — kerjain dari atas ke bawah.
 
+**Status: semua item wajib udah diverifikasi kelar** (dicek ulang 23 Jul 2026 — clone fresh, `npm install`, `tsc --noEmit`, `eslint`, coba build).
+
 ## Prioritas 1 — Fitur AI belum bisa jalan sama sekali
 
-- [ ] `lib/gemini.ts` — ganti `model: 'gemini-3.0-flash'` jadi `model: 'gemini-2.5-flash'`. Model ID `gemini-3.0-flash` gak valid (format nama model Google gak punya bentuk "3.0"), setiap panggilan bakal gagal. `gemini-2.5-flash` udah dikonfirmasi stabil dan jadi contoh resmi di dokumentasi `@google/genai` saat ini.
+- [x] `lib/gemini.ts` — model diganti ke `gemini-2.5-flash`. Sekalian ditambahin timeout 25 detik + error handling terpisah (timeout/kuota habis/gagal umum).
 
 ## Prioritas 2 — Bersihin repo
 
-- [ ] Hapus `fix-admin-uuid.sql`. Fix-nya udah keaplikasiin ke Supabase asli — file ini cuma sisa histori yang nge-expose UUID admin asli ke repo publik tanpa perlu lagi.
-- [ ] Hapus `create_admin.js`. Ini bukan script "bikin admin" — isinya scaffold generator buat nulis file-file proyek yang ketinggalan kehapus. Hardcode path lokal (`/home/akiru/Documents/porto`) dan gagal lint sendiri (pakai `require()`).
+- [x] `fix-admin-uuid.sql` — udah dihapus, gak ada lagi di `git ls-files`.
+- [x] `create_admin.js` — udah dihapus.
 
-## Prioritas 3 — `npm run lint` harus clean (sekarang masih ada error, bukan cuma warning)
+## Prioritas 3 — `npm run lint` harus clean
 
-- [ ] `components/ScrollAnimator.tsx` — error `react-hooks/set-state-in-effect` di bagian yang manggil `setIsVisible(true)` langsung di dalam effect (buat cek `prefers-reduced-motion`). Fix: inisialisasi `isVisible` pakai lazy initializer (`useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)`) buat cabang reduced-motion, biar gak ada setState di dalam effect. Logic-nya sendiri udah bener, ini soal pattern doang.
+- [x] `components/ScrollAnimator.tsx` — dibenerin pakai lazy initializer, sesuai saran.
 
 ## Prioritas 4 — Konsistensi auth
 
-- [ ] `app/api/analyze-certificate/route.ts` — auth check sekarang cuma `if (!session)`. Tambahin cek `session.user.id === process.env.ADMIN_USER_ID`, samain kayak yang udah ada di `proxy.ts`. Endpoint ini motong kuota gratis Gemini kalau kepanggil bukan dari admin.
+- [x] `app/api/analyze-certificate/route.ts` — sekarang cek `user.id !== ADMIN_USER_ID`, samain kayak `proxy.ts`.
 
-## Nice-to-have (opsional, gak blocking)
+## Nice-to-have — status
 
-- [ ] Unused vars di beberapa file: `AdminTableClient.tsx`, `admin/actions.ts`, `admin/login/page.tsx`, `admin/new/page.tsx`, `admin/page.tsx`, `api/health/route.ts`
-- [ ] 2x pemakaian `any` di `AchievementForm.tsx` — kasih tipe yang bener
-- [ ] `<img>` → `next/image` minimal di `LogEntry.tsx` (ini yang publik, ngaruh ke performa halaman)
-- [ ] Font ke-load dobel: `next/font/google` di `layout.tsx` DAN `@import` di `globals.css` — pilih satu aja (next/font, lebih optimal)
-- [ ] Tambahin timeout eksplisit (20-30 detik) buat call Gemini di `lib/gemini.ts`, sesuai spec awal di `plan/04-ai-integration.md`
+- [x] Unused vars — bersih, gak muncul lagi di lint.
+- [x] 2x `any` di `AchievementForm.tsx` — udah dikasih tipe yang bener.
+- [x] Font dobel-load — `@import` di `globals.css` udah dicabut, tinggal `next/font` doang.
+- [x] Timeout Gemini — udah ditambahin (lihat Prioritas 1).
+- [ ] `<img>` → `next/image` di `LogEntry.tsx` — belum diambil, masih `<img>` dengan lint di-suppress manual. Tetep opsional, gak mendesak.
+
+---
+
+# Fixes — Round 2 (dari code review 23 Jul 2026)
+
+Muncul dari komit baru `fix:add-tumnail` (nambahin `PdfThumbnail.tsx` buat preview sertifikat PDF pakai `pdfjs-dist`) — fitur bagusnya jalan, cuma nyisain 1 lint error.
+
+## Prioritas 1 — satu-satunya blocker
+
+- [ ] `components/PdfThumbnail.tsx` baris 18 — `let renderTask: any;` gagal lint (`@typescript-eslint/no-explicit-any`). Ganti jadi tipe yang diturunin dari return value-nya sendiri, biar gak perlu tau nama tipe import pdfjs-dist yang persis:
+
+  ```ts
+  let renderTask: ReturnType<typeof page.render> | undefined;
+  ```
 
 ## Verifikasi setelah selesai
 
 1. `npm run lint` — harus 0 error
-2. `npm run build` — harus sukses
-3. Upload sertifikat asli, klik "Generate dengan AI" — harus balikin hasil, bukan error model
-4. `git ls-files` — pastiin `fix-admin-uuid.sql` dan `create_admin.js` udah gak ada di tracking
+2. `npm run build` — harus sukses (kalau dites lokal; kalau di sandbox tanpa akses fonts.googleapis.com, error font itu bukan bug kode, aman diabaikan)
+3. Upload sertifikat gambar DAN sertifikat PDF, klik "Generate dengan AI" di dua-duanya — mastiin thumbnail PDF beneran render, bukan cuma AI generate-nya yang jalan
+4. `git ls-files` — pastiin `fix-admin-uuid.sql` dan `create_admin.js` tetap gak ada

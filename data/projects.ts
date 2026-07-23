@@ -7,6 +7,7 @@ export const projects: Project[] = [
     title: 'NihonZ',
     stack: ['React', 'Firebase', 'Zustand'],
     description: 'Aplikasi belajar JLPT N4 dengan mekanik RPG — heart, combo, boss battle.',
+    description_en: 'JLPT N4 learning app with RPG mechanics — heart, combo, boss battle.',
   },
   {
     date: '2025.09',
@@ -14,5 +15,6 @@ export const projects: Project[] = [
     title: 'siPandu',
     stack: ['Next.js', 'Supabase', 'Gemini'],
     description: 'Chatbot WhatsApp + dashboard analitik buat UMKM.',
+    description_en: 'WhatsApp chatbot + analytics dashboard for MSMEs.',
   },
 ];

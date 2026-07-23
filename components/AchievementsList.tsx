@@ -9,10 +9,12 @@ import { CATEGORIES } from '@/lib/types';
 
 interface AchievementsListProps {
   achievements: Achievement[];
+  lang: 'id' | 'en';
 }
 
-export function AchievementsList({ achievements }: AchievementsListProps) {
+export function AchievementsList({ achievements, lang }: AchievementsListProps) {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '????.??';
@@ -40,10 +42,40 @@ export function AchievementsList({ achievements }: AchievementsListProps) {
     return list.filter(c => c.count > 0);
   }, [achievements]);
 
-  const filtered = useMemo(() => {
+  // First filter by category
+  const filteredByCategory = useMemo(() => {
     if (!activeCategory) return achievements;
     return achievements.filter(a => a.category === activeCategory);
   }, [achievements, activeCategory]);
+
+  // Then extract unique tags from the category-filtered list
+  const availableTags = useMemo(() => {
+    const tagCounts: Record<string, number> = {};
+    filteredByCategory.forEach(a => {
+      if (a.tags) {
+        a.tags.forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+      }
+    });
+    // Sort tags by frequency (descending), then alphabetically
+    return Object.entries(tagCounts)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([tag]) => tag);
+  }, [filteredByCategory]);
+
+  // Finally filter by tag if one is selected
+  const filtered = useMemo(() => {
+    if (!activeTag) return filteredByCategory;
+    return filteredByCategory.filter(a => a.tags && a.tags.includes(activeTag));
+  }, [filteredByCategory, activeTag]);
+
+  // Reset active tag if category changes and the tag is no longer available
+  React.useEffect(() => {
+    if (activeTag && !availableTags.includes(activeTag)) {
+      setActiveTag(null);
+    }
+  }, [activeCategory, availableTags, activeTag]);
 
   if (achievements.length === 0) {
     return <p className="mono">Belum ada pencapaian yang ditampilkan.</p>;
@@ -54,8 +86,35 @@ export function AchievementsList({ achievements }: AchievementsListProps) {
       <FilterChips
         categories={categoriesWithCounts}
         activeCategory={activeCategory}
-        onSelect={setActiveCategory}
+        onSelect={(cat) => {
+          setActiveCategory(cat);
+          setActiveTag(null); // Reset tag when category changes
+        }}
       />
+
+      {availableTags.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '2rem' }}>
+          {availableTags.map(tag => (
+            <button
+              key={tag}
+              onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+              style={{
+                background: activeTag === tag ? 'var(--accent-teal)' : 'transparent',
+                color: activeTag === tag ? '#000' : 'var(--text-muted)',
+                border: `1px solid ${activeTag === tag ? 'var(--accent-teal)' : 'rgba(255, 255, 255, 0.1)'}`,
+                padding: '0.25rem 0.75rem',
+                borderRadius: '16px',
+                fontSize: '0.75rem',
+                fontFamily: 'var(--font-mono)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              #{tag}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div>
         {filtered.length === 0 ? (
@@ -66,9 +125,9 @@ export function AchievementsList({ achievements }: AchievementsListProps) {
               <LogEntry
                 date={formatDate(achievement.date_achieved)}
                 status={achievement.featured ? 'featured' : 'published'}
-                title={achievement.title}
-                subtitle={achievement.issuer || undefined}
-                description={achievement.description || undefined}
+                title={lang === 'en' && achievement.title_en ? achievement.title_en : achievement.title}
+                subtitle={lang === 'en' && achievement.issuer_en ? achievement.issuer_en : (achievement.issuer || undefined)}
+                description={lang === 'en' && achievement.description_en ? achievement.description_en : (achievement.description || undefined)}
                 tags={achievement.tags}
                 category={achievement.category}
                 verifyUrl={achievement.verify_url || undefined}
