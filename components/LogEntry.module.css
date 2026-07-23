@@ -122,3 +122,24 @@
   opacity: 0.85;
   transform: scale(1.02);
 }
+
+.pdfPreview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 143, 163, 0.15);
+  background-color: rgba(139, 143, 163, 0.05);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.pdfPreview:hover {
+  background-color: rgba(56, 189, 174, 0.1);
+  border-color: rgba(56, 189, 174, 0.3);
+  color: var(--accent-teal);
+  transform: scale(1.02);
+}

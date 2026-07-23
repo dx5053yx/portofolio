@@ -1,5 +1,16 @@
+'use client';
+
 import React from 'react';
+import dynamic from 'next/dynamic';
 import styles from './LogEntry.module.css';
+
+const PdfThumbnail = dynamic(
+  () => import('./PdfThumbnail').then((mod) => mod.PdfThumbnail),
+  { 
+    ssr: false,
+    loading: () => <div className={styles.pdfPreview}>Memuat Thumbnail PDF...</div>
+  }
+);
 
 interface LogEntryProps {
   date: string;
@@ -26,6 +37,9 @@ export function LogEntry({
 }: LogEntryProps) {
   // Determine status dot modifier class based on globals.css
   const statusClass = `status-dot--${status}`;
+  
+  // Check if the image is actually a PDF
+  const isPdf = imageUrl?.split('?')[0].toLowerCase().endsWith('.pdf');
 
   return (
     <div className={styles.entry}>
@@ -57,8 +71,12 @@ export function LogEntry({
         
         {imageUrl && (
           <a href={imageUrl} target="_blank" rel="noopener noreferrer" className={styles.imageLink}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imageUrl} alt={title} className={styles.thumbnail} />
+            {isPdf ? (
+              <PdfThumbnail url={imageUrl} className={styles.thumbnail} />
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={imageUrl} alt={title} className={styles.thumbnail} />
+            )}
           </a>
         )}
 
